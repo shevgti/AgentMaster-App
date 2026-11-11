@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import com.agentmaster.data.AgentRepository
 import com.agentmaster.domain.*
 import com.agentmaster.ui.*
+import com.agentmaster.ui.theme.AgentMasterTheme
 import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     private val orchestrator = Orchestrator()
