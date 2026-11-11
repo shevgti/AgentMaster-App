@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,7 +22,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(tasks: List<Task>, isWorking: Boolean, onSendTask: (String) -> Unit) {
+fun ChatScreen(tasks: List<Task>, isWorking: Boolean, onSendTask: (String) -> Unit, onOpenSettings: () -> Unit) {
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -39,7 +40,14 @@ fun ChatScreen(tasks: List<Task>, isWorking: Boolean, onSendTask: (String) -> Un
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("🤖 Агент-Мастер", fontWeight = FontWeight.Bold) })
+            TopAppBar(
+                title = { Text("🤖 Агент-Мастер", fontWeight = FontWeight.Bold) },
+                actions = {
+                    IconButton(onClick = onOpenSettings) {
+                        Icon(Icons.Default.Settings, contentDescription = "Настройки")
+                    }
+                }
+            )
         }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
