@@ -32,7 +32,7 @@ fun ChatScreen(tasks: List<Task>, isWorking: Boolean, onSendTask: (String) -> Un
                             Text(statusText, style = MaterialTheme.typography.bodySmall)
                             Spacer(Modifier.height(8.dp))
                             for (agent in task.agents) AgentCard(agent)
-                            if (task.finalResult.isNotEmpty()) { Spacer(Modifier.height(8.dp)); HorizontalDivider(); Spacer(Modifier.height(8.dp)); Text("🎯 Итог:", fontWeight = FontWeight.Bold); Text(task.finalResult) }
+                            if (task.finalResult.isNotEmpty()) { Spacer(Modifier.height(8.dp)); Divider(); Spacer(Modifier.height(8.dp)); Text("🎯 Итог:", fontWeight = FontWeight.Bold); Text(task.finalResult) }
                         }
                     }
                 }
