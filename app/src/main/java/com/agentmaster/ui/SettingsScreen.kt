@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(currentApiKey: String, currentApiUrl: String, currentModel: String, onSave: (String, String, String) -> Unit, onBack: () -> Unit) {
