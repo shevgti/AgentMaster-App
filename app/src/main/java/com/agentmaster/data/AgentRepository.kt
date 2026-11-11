@@ -46,7 +46,14 @@ class AgentRepository(
         } catch (e: HttpException) {
             val detail = when (e.code()) {
                 401 -> "Неверный API-ключ (HTTP 401). Проверь ключ в настройках."
-                403 -> "Сервер запретил доступ (HTTP 403). Проверь права ключа."
+                403 -> {
+                    val serverMessage = e.response()?.errorBody()?.string()?.take(500)
+                    if (serverMessage.isNullOrBlank()) {
+                        "Доступ запрещён (HTTP 403). Проверь права API-ключа, доступ к модели и настройки оплаты у провайдера."
+                    } else {
+                        "Доступ запрещён (HTTP 403). Ответ сервера: $serverMessage"
+                    }
+                }
                 404 -> "Модель или адрес API не найдены (HTTP 404). Проверь URL и модель."
                 429 -> "Превышен лимит запросов (HTTP 429). Попробуй позже."
                 in 500..599 -> "Ошибка сервера ИИ (HTTP ${e.code()}). Попробуй позже."
