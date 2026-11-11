@@ -21,7 +21,7 @@ fun AgentCard(agent: AgentInstance) {
             }
             Spacer(Modifier.height(4.dp))
             Text(agent.taskDescription, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-            if (agent.result.isNotEmpty()) { Spacer(Modifier.height(8.dp)); HorizontalDivider(); Spacer(Modifier.height(8.dp)); Text(agent.result, style = MaterialTheme.typography.bodyMedium) }
+            if (agent.result.isNotEmpty()) { Spacer(Modifier.height(8.dp)); Divider(); Spacer(Modifier.height(8.dp)); Text(agent.result, style = MaterialTheme.typography.bodyMedium) }
         }
     }
 }
