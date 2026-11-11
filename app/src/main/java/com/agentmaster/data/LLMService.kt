@@ -1,7 +1,6 @@
 package com.agentmaster.data
 import com.google.gson.annotations.SerializedName
 import retrofit2.http.*
-
 interface LLMService {
     @POST("chat/completions")
     suspend fun chatCompletion(@Header("Authorization") auth: String, @Body request: ChatRequest): ChatResponse
