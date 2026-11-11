@@ -28,7 +28,7 @@ fun ChatScreen(tasks: List<Task>, isWorking: Boolean, onSendTask: (String) -> Un
                         Column(modifier = Modifier.padding(12.dp)) {
                             Text("📝 ${task.userPrompt}", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(4.dp))
-                            val statusText = when (task.status) { "PENDING" -> "⏳ Ожидание..."; "PLANNING" -> "🧠 Планирование..."; "EXECUTING" -> "⚙️ Агенты работают..."; "ASSEMBLING" -> "🔗 Сборка..."; "DONE" -> "✅ Готово"; else -> "❌ Ошибка" }
+                            val statusText = when (task.status) { "PENDING" -> "⏳ Ожидание..."; "PLANNING" -> "🧠 Планирование..."; "EXECUTING" -> "⚙️ Агенты работают..."; "ASSEMBLING" -> "🔗 Сборка..."; "DONE" -> "✅ Готово"; "PARTIAL" -> "⚠️ Выполнено с ошибками"; else -> "❌ Ошибка" }
                             Text(statusText, style = MaterialTheme.typography.bodySmall)
                             Spacer(Modifier.height(8.dp))
                             for (agent in task.agents) AgentCard(agent)
