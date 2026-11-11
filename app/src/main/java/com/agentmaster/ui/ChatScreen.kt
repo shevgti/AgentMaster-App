@@ -14,7 +14,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.agentmaster.domain.*
 import kotlinx.coroutines.launch
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(tasks: List<Task>, isWorking: Boolean, onSendTask: (String) -> Unit) {
@@ -29,15 +28,11 @@ fun ChatScreen(tasks: List<Task>, isWorking: Boolean, onSendTask: (String) -> Un
                         Column(modifier = Modifier.padding(12.dp)) {
                             Text("📝 ${task.userPrompt}", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(4.dp))
-                            val statusText = when (task.status) {
-                                TaskStatus.PENDING -> "⏳ Ожидание..."; TaskStatus.PLANNING -> "🧠 Планирование..."
-                                TaskStatus.EXECUTING -> "⚙️ Агенты работают..."; TaskStatus.ASSEMBLING -> "🔗 Сборка..."
-                                TaskStatus.DONE -> "✅ Готово"; TaskStatus.ERROR -> "❌ Ошибка"
-                            }
+                            val statusText = when (task.status) { "PENDING" -> "⏳ Ожидание..."; "PLANNING" -> "🧠 Планирование..."; "EXECUTING" -> "⚙️ Агенты работают..."; "ASSEMBLING" -> "🔗 Сборка..."; "DONE" -> "✅ Готово"; else -> "❌ Ошибка" }
                             Text(statusText, style = MaterialTheme.typography.bodySmall)
                             Spacer(Modifier.height(8.dp))
                             for (agent in task.agents) AgentCard(agent)
-                            if (task.finalResult.isNotEmpty()) { Spacer(Modifier.height(8.dp)); androidx.compose.material3.HorizontalDivider(); Spacer(Modifier.height(8.dp)); Text("🎯 Итог:", fontWeight = FontWeight.Bold); Text(task.finalResult) }
+                            if (task.finalResult.isNotEmpty()) { Spacer(Modifier.height(8.dp)); HorizontalDivider(); Spacer(Modifier.height(8.dp)); Text("🎯 Итог:", fontWeight = FontWeight.Bold); Text(task.finalResult) }
                         }
                     }
                 }
