@@ -22,6 +22,8 @@ jobs:
         with:
           gradle-version: '8.2'
           cache-disabled: true
+      - name: Run unit tests
+        run: gradle testDebugUnitTest --no-daemon --stacktrace --console=plain
       - name: Build debug APK
         run: gradle assembleDebug --no-daemon --stacktrace --console=plain
       - name: Upload APK
