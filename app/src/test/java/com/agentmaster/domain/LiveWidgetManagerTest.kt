@@ -56,6 +56,8 @@ class LiveWidgetManagerTest {
         assertEquals(LiveWidgetCommand.HideAll, LiveWidgetCommandParser.parse("Спрячь все блоки"))
         assertEquals(LiveWidgetCommand.Show(LiveWidgetType.BATTERY), LiveWidgetCommandParser.parse("Show battery"))
         assertEquals(LiveWidgetCommand.Resize(LiveWidgetType.CLOCK, 1.15f), LiveWidgetCommandParser.parse("Сделай часы крупнее"))
+        assertEquals(LiveWidgetCommand.Move(LiveWidgetType.CLOCK, 0.12f, 0f), LiveWidgetCommandParser.parse("Перемести часы вправо"))
+        assertEquals(LiveWidgetCommand.Move(LiveWidgetType.BATTERY, 0f, -0.12f), LiveWidgetCommandParser.parse("Move battery up"))
         assertNull(LiveWidgetCommandParser.parse("Какая сейчас погода?"))
     }
 
