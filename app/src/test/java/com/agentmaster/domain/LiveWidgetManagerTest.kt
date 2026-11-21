@@ -3,6 +3,7 @@ package com.agentmaster.domain
 import org.junit.Assert.assertEquals
 import org.junit.AssertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertNotEquals
 import org.junit.Test
 
 class LiveWidgetManagerTest {
@@ -70,6 +71,7 @@ class LiveWidgetManagerTest {
         assertEquals(2, updated.widgets.size)
         assertEquals(2, updated.widgets.map { it.id }.distinct().size)
         assertEquals(2, updated.widgets.map { it.zIndex }.distinct().size)
+        assertNotEquals(first.position, updated.widgets.last().position)
     }
 
     @Test fun showCreatesMissingWidget() {
