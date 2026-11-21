@@ -56,6 +56,7 @@ class LiveWidgetManagerTest {
     @Test fun parserRecognizesRussianAndEnglishCommandsButNotQuestions() {
         assertEquals(LiveWidgetCommand.HideAll, LiveWidgetCommandParser.parse("Спрячь все блоки"))
         assertEquals(LiveWidgetCommand.Show(LiveWidgetType.BATTERY), LiveWidgetCommandParser.parse("Show battery"))
+        assertEquals(LiveWidgetCommand.SetCity("Берлине"), LiveWidgetCommandParser.parse("Покажи погоду в Берлине"))
         assertEquals(LiveWidgetCommand.Add(LiveWidgetType.CLOCK), LiveWidgetCommandParser.parse("Добавь ещё часы"))
         assertEquals(LiveWidgetCommand.Add(LiveWidgetType.BATTERY), LiveWidgetCommandParser.parse("Add another battery"))
         assertEquals(LiveWidgetCommand.Resize(LiveWidgetType.CLOCK, 1.15f), LiveWidgetCommandParser.parse("Сделай часы крупнее"))
@@ -72,6 +73,15 @@ class LiveWidgetManagerTest {
         assertEquals(2, updated.widgets.map { it.id }.distinct().size)
         assertEquals(2, updated.widgets.map { it.zIndex }.distinct().size)
         assertNotEquals(first.position, updated.widgets.last().position)
+    }
+
+
+    @Test fun settingWeatherCityCreatesOrUpdatesWeatherWidget() {
+        val empty = LiveWidgetManager.apply(LiveWidgetLayout(), LiveWidgetCommand.SetCity("Берлин"))
+        assertEquals("Берлин", empty.widgets.single().city)
+        val updated = LiveWidgetManager.apply(empty, LiveWidgetCommand.SetCity("Гамбург"))
+        assertEquals(1, updated.widgets.size)
+        assertEquals("Гамбург", updated.widgets.single().city)
     }
 
     @Test fun showCreatesMissingWidget() {
