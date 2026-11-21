@@ -50,7 +50,18 @@ object LiveWidgetManager {
     fun apply(layout: LiveWidgetLayout, command: LiveWidgetCommand): LiveWidgetLayout {
         val widgets = layout.widgets.toMutableList()
         when (command) {
-            is LiveWidgetCommand.Add -> widgets += LiveWidget(type = command.type, zIndex = nextZ(widgets))
+            is LiveWidgetCommand.Add -> {
+                val sameTypeCount = widgets.count { it.type == command.type }
+                val offset = 0.08f * (sameTypeCount + 1)
+                widgets += LiveWidget(
+                    type = command.type,
+                    position = WidgetPosition(
+                        x = (0.72f - offset).coerceIn(0.04f, 0.92f),
+                        y = (0.12f + offset).coerceIn(0.04f, 0.92f)
+                    ),
+                    zIndex = nextZ(widgets)
+                )
+            }
             is LiveWidgetCommand.Show -> {
                 val index = widgets.indexOfFirst { it.type == command.type }
                 if (index >= 0) {
