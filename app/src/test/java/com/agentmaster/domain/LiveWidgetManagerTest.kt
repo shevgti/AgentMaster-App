@@ -55,10 +55,21 @@ class LiveWidgetManagerTest {
     @Test fun parserRecognizesRussianAndEnglishCommandsButNotQuestions() {
         assertEquals(LiveWidgetCommand.HideAll, LiveWidgetCommandParser.parse("Спрячь все блоки"))
         assertEquals(LiveWidgetCommand.Show(LiveWidgetType.BATTERY), LiveWidgetCommandParser.parse("Show battery"))
+        assertEquals(LiveWidgetCommand.Add(LiveWidgetType.CLOCK), LiveWidgetCommandParser.parse("Добавь ещё часы"))
+        assertEquals(LiveWidgetCommand.Add(LiveWidgetType.BATTERY), LiveWidgetCommandParser.parse("Add another battery"))
         assertEquals(LiveWidgetCommand.Resize(LiveWidgetType.CLOCK, 1.15f), LiveWidgetCommandParser.parse("Сделай часы крупнее"))
         assertEquals(LiveWidgetCommand.Move(LiveWidgetType.CLOCK, 0.12f, 0f), LiveWidgetCommandParser.parse("Перемести часы вправо"))
         assertEquals(LiveWidgetCommand.Move(LiveWidgetType.BATTERY, 0f, -0.12f), LiveWidgetCommandParser.parse("Move battery up"))
         assertNull(LiveWidgetCommandParser.parse("Какая сейчас погода?"))
+    }
+
+    @Test fun addCreatesIndependentInstancesOfSameType() {
+        val first = LiveWidget(id = "clock-one", type = LiveWidgetType.CLOCK)
+        val layout = LiveWidgetLayout(widgets = listOf(first))
+        val updated = LiveWidgetManager.apply(layout, LiveWidgetCommand.Add(LiveWidgetType.CLOCK))
+        assertEquals(2, updated.widgets.size)
+        assertEquals(2, updated.widgets.map { it.id }.distinct().size)
+        assertEquals(2, updated.widgets.map { it.zIndex }.distinct().size)
     }
 
     @Test fun showCreatesMissingWidget() {
