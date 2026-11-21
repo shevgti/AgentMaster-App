@@ -84,6 +84,26 @@ class LiveWidgetManagerTest {
         assertEquals("Гамбург", updated.widgets.single().city)
     }
 
+    @Test fun hideCommandHidesEveryInstanceOfRequestedType() {
+        val layout = LiveWidgetLayout(widgets = listOf(
+            LiveWidget(id = "clock-1", type = LiveWidgetType.CLOCK),
+            LiveWidget(id = "clock-2", type = LiveWidgetType.CLOCK),
+            LiveWidget(id = "battery-1", type = LiveWidgetType.BATTERY)
+        ))
+        val hidden = LiveWidgetManager.apply(layout, LiveWidgetCommand.Hide(LiveWidgetType.CLOCK))
+        assertEquals(listOf(false, false, true), hidden.widgets.map { it.visible })
+    }
+
+    @Test fun moveCommandTargetsTopmostVisibleInstance() {
+        val layout = LiveWidgetLayout(widgets = listOf(
+            LiveWidget(id = "clock-1", type = LiveWidgetType.CLOCK, position = WidgetPosition(0.2f, 0.2f), zIndex = 1),
+            LiveWidget(id = "clock-2", type = LiveWidgetType.CLOCK, position = WidgetPosition(0.5f, 0.5f), zIndex = 8)
+        ))
+        val moved = LiveWidgetManager.apply(layout, LiveWidgetCommand.Move(LiveWidgetType.CLOCK, 0.12f, 0f))
+        assertEquals(0.2f, moved.widgets[0].position.x, 0.001f)
+        assertEquals(0.62f, moved.widgets[1].position.x, 0.001f)
+    }
+
     @Test fun showCreatesMissingWidget() {
         val result = LiveWidgetManager.apply(LiveWidgetLayout(), LiveWidgetCommand.Show(LiveWidgetType.WEATHER))
         assertNotNull(result.widgets.singleOrNull())
