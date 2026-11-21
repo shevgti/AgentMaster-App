@@ -19,7 +19,7 @@ object LiveWidgetCommandParser {
 
         if (type == LiveWidgetType.WEATHER) {
             val cityMatch = Regex("""(?:погод\w*|weather)\s+(?:в|in)\s+(.+)$""").find(text)
-            val city = cityMatch?.groupValues?.getOrNull(1)?.trim()?.trimEnd('.', '!', '?')
+            val city = cityMatch?.groupValues?.getOrNull(1)?.trim()?.trimEnd('.', '!', '?')?.let(::normalizeCityName)
             if (!city.isNullOrBlank()) return LiveWidgetCommand.SetCity(city)
         }
 
@@ -50,5 +50,19 @@ object LiveWidgetCommandParser {
             return LiveWidgetCommand.Remove(type)
         }
         return null
+    }
+}
+
+ 
+private fun normalizeCityName(value: String): String {
+    val trimmed = value.trim()
+    return when (trimmed.lowercase()) {
+        "берлине" -> "Берлин"
+        "гамбурге" -> "Гамбург"
+        "мюнхене" -> "Мюнхен"
+        "франкфурте" -> "Франкфурт"
+        "москве" -> "Москва"
+        "санкт-петербурге" -> "Санкт-Петербург"
+        else -> trimmed
     }
 }
