@@ -17,6 +17,9 @@ object LiveWidgetCommandParser {
             else -> return null
         }
 
+        val add = listOf("добавь еще", "добавь ещё", "создай еще", "создай ещё", "add another", "add new").any(text::contains)
+        if (add) return LiveWidgetCommand.Add(type)
+
         val hide = listOf("спрячь", "скрой", "убери", "hide", "не показывай").any(text::contains)
         val show = listOf("покажи", "верни", "открой", "show", "display").any(text::contains)
         if (hide) return LiveWidgetCommand.Hide(type)
