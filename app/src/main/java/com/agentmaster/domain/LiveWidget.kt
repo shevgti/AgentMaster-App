@@ -91,4 +91,3 @@ object LiveWidgetManager {
     private fun nextZ(widgets: List<LiveWidget>): Int = (widgets.maxOfOrNull { it.zIndex } ?: -1) + 1
 }
 
-private const val LIVE_WIDGET_MOVE_STEP = 0.12f
