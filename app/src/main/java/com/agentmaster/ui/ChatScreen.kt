@@ -1,6 +1,7 @@
 package com.agentmaster.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -12,6 +13,7 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -22,7 +24,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(tasks: List<Task>, isWorking: Boolean, onSendTask: (String) -> Unit, onOpenSettings: () -> Unit) {
+fun ChatScreen(tasks: List<Task>, isWorking: Boolean, widgets: List<LiveWidget>, onWidgetChanged: (LiveWidget) -> Unit, onSendTask: (String) -> Unit, onOpenSettings: () -> Unit) {
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -41,7 +43,7 @@ fun ChatScreen(tasks: List<Task>, isWorking: Boolean, onSendTask: (String) -> Un
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("🤖 Агент-Мастер", fontWeight = FontWeight.Bold) },
+                title = { Text("🤖 Мегаагент", fontWeight = FontWeight.Bold) },
                 actions = {
                     IconButton(onClick = onOpenSettings) {
                         Icon(Icons.Default.Settings, contentDescription = "Настройки")
@@ -51,12 +53,13 @@ fun ChatScreen(tasks: List<Task>, isWorking: Boolean, onSendTask: (String) -> Un
         }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            LazyColumn(
-                modifier = Modifier.weight(1f).fillMaxWidth().padding(12.dp),
-                state = listState,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(tasks) { task ->
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize().padding(12.dp),
+                    state = listState,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(tasks) { task ->
                     Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
                         Column(modifier = Modifier.padding(12.dp)) {
                             Text("📝 ${task.userPrompt}", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
@@ -82,7 +85,24 @@ fun ChatScreen(tasks: List<Task>, isWorking: Boolean, onSendTask: (String) -> Un
                             }
                         }
                     }
+                    }
                 }
+                LiveWidgetsOverlay(
+                    widgets = widgets,
+                    onWidgetChanged = onWidgetChanged,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 10.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextButton(onClick = { onSendTask("Добавь ещё часы") }) { Text("＋ Часы") }
+                TextButton(onClick = { onSendTask("Покажи погоду") }) { Text("＋ Погода") }
+                TextButton(onClick = { onSendTask("Добавь ещё батарею") }) { Text("＋ Батарея") }
+                TextButton(onClick = { onSendTask("Спрячь все блоки") }) { Text("Скрыть") }
             }
 
             if (isWorking) {
