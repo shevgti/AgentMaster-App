@@ -38,16 +38,20 @@ class MainActivity : ComponentActivity() {
                         isWorking = isWorking,
                         widgets = widgetLayout.widgets,
                         onWidgetChanged = { changed ->
-                            widgetLayout = widgetLayout.copy(widgets = widgetLayout.widgets.map { if (it.id == changed.id) changed else it })
-                            widgetRepository.save(widgetLayout)
+                            val updatedLayout = widgetLayout.copy(
+                                widgets = widgetLayout.widgets.map { if (it.id == changed.id) changed else it }
+                            )
+                            widgetLayout = updatedLayout
+                            widgetRepository.save(updatedLayout)
                         },
                         onOpenSettings = { screen = "settings" },
                         onSendTask = { prompt ->
                             if (prompt.isBlank()) return@ChatScreen
                             val widgetCommand = LiveWidgetCommandParser.parse(prompt)
                             if (widgetCommand != null) {
-                                widgetLayout = LiveWidgetManager.apply(widgetLayout, widgetCommand)
-                                widgetRepository.save(widgetLayout)
+                                val updatedLayout = LiveWidgetManager.apply(widgetLayout, widgetCommand)
+                                widgetLayout = updatedLayout
+                                widgetRepository.save(updatedLayout)
                                 return@ChatScreen
                             }
                             if (isWorking) return@ChatScreen
