@@ -82,9 +82,12 @@ private fun LiveWidgetCard(widget: LiveWidget, modifier: Modifier = Modifier) {
 
     LaunchedEffect(widget.id, widget.city, widget.type) {
         if (widget.type == LiveWidgetType.WEATHER && widget.city.isNotBlank()) {
-            runCatching { weatherClient.fetch(widget.city) }
-                .onSuccess { weather = it; weatherError = null }
-                .onFailure { weatherError = it.localizedMessage ?: "Не удалось получить погоду" }
+            while (true) {
+                runCatching { weatherClient.fetch(widget.city) }
+                    .onSuccess { weather = it; weatherError = null }
+                    .onFailure { weatherError = it.localizedMessage ?: "Не удалось получить погоду" }
+                delay(15 * 60 * 1_000L)
+            }
         }
     }
 
