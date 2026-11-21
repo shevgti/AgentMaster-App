@@ -92,6 +92,17 @@ fun ChatScreen(tasks: List<Task>, isWorking: Boolean, widgets: List<LiveWidget>,
                 )
             }
 
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextButton(onClick = { onSendTask("Добавь ещё часы") }) { Text("＋ Часы") }
+                TextButton(onClick = { onSendTask("Покажи погоду") }) { Text("＋ Погода") }
+                TextButton(onClick = { onSendTask("Добавь ещё батарею") }) { Text("＋ Батарея") }
+                TextButton(onClick = { onSendTask("Спрячь все блоки") }) { Text("Скрыть") }
+            }
+
             if (isWorking) {
                 Row(
                     Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp),
