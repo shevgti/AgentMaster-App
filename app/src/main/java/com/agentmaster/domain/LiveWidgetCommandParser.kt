@@ -17,6 +17,12 @@ object LiveWidgetCommandParser {
             else -> return null
         }
 
+        if (type == LiveWidgetType.WEATHER) {
+            val cityMatch = Regex("(?:погод\\\\w*|weather)\\\\s+(?:в|in)\\\\s+(.+)$").find(text)
+            val city = cityMatch?.groupValues?.getOrNull(1)?.trim()?.trimEnd('.', '!', '?')
+            if (!city.isNullOrBlank()) return LiveWidgetCommand.SetCity(city)
+        }
+
         val add = listOf("добавь еще", "добавь ещё", "создай еще", "создай ещё", "add another", "add new").any(text::contains)
         if (add) return LiveWidgetCommand.Add(type)
 
