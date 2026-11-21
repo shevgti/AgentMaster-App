@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(tasks: List<Task>, isWorking: Boolean, onSendTask: (String) -> Unit, onOpenSettings: () -> Unit) {
+fun ChatScreen(tasks: List<Task>, isWorking: Boolean, widgets: List<LiveWidget>, onWidgetChanged: (LiveWidget) -> Unit, onSendTask: (String) -> Unit, onOpenSettings: () -> Unit) {
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -51,12 +51,13 @@ fun ChatScreen(tasks: List<Task>, isWorking: Boolean, onSendTask: (String) -> Un
         }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            LazyColumn(
-                modifier = Modifier.weight(1f).fillMaxWidth().padding(12.dp),
-                state = listState,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(tasks) { task ->
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize().padding(12.dp),
+                    state = listState,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(tasks) { task ->
                     Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
                         Column(modifier = Modifier.padding(12.dp)) {
                             Text("📝 ${task.userPrompt}", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
@@ -82,7 +83,13 @@ fun ChatScreen(tasks: List<Task>, isWorking: Boolean, onSendTask: (String) -> Un
                             }
                         }
                     }
+                    }
                 }
+                LiveWidgetsOverlay(
+                    widgets = widgets,
+                    onWidgetChanged = onWidgetChanged,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
 
             if (isWorking) {
