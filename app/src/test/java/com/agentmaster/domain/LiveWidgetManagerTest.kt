@@ -56,7 +56,7 @@ class LiveWidgetManagerTest {
     @Test fun parserRecognizesRussianAndEnglishCommandsButNotQuestions() {
         assertEquals(LiveWidgetCommand.HideAll, LiveWidgetCommandParser.parse("Спрячь все блоки"))
         assertEquals(LiveWidgetCommand.Show(LiveWidgetType.BATTERY), LiveWidgetCommandParser.parse("Show battery"))
-        assertEquals(LiveWidgetCommand.SetCity("Берлине"), LiveWidgetCommandParser.parse("Покажи погоду в Берлине"))
+        assertEquals(LiveWidgetCommand.SetCity("Берлин"), LiveWidgetCommandParser.parse("Покажи погоду в Берлине"))
         assertEquals(LiveWidgetCommand.Add(LiveWidgetType.CLOCK), LiveWidgetCommandParser.parse("Добавь ещё часы"))
         assertEquals(LiveWidgetCommand.Add(LiveWidgetType.BATTERY), LiveWidgetCommandParser.parse("Add another battery"))
         assertEquals(LiveWidgetCommand.Resize(LiveWidgetType.CLOCK, 1.15f), LiveWidgetCommandParser.parse("Сделай часы крупнее"))
