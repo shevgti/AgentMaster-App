@@ -2,6 +2,7 @@ package com.agentmaster.domain
 
 /** Parses explicit widget-control requests. Ordinary informational questions return null. */
 object LiveWidgetCommandParser {
+    private const val MOVE_STEP = 0.12f
     fun parse(raw: String): LiveWidgetCommand? {
         val text = raw.trim().lowercase().replace('ё', 'е')
         if (text.isBlank()) return null
@@ -34,7 +35,7 @@ object LiveWidgetCommandParser {
             else -> null
         }
         if (directions != null && listOf("перемести", "сдвинь", "move", "shift").any(text::contains)) {
-            return LiveWidgetCommand.Move(type, directions.first * LIVE_WIDGET_MOVE_STEP, directions.second * LIVE_WIDGET_MOVE_STEP)
+            return LiveWidgetCommand.Move(type, directions.first * MOVE_STEP, directions.second * LIVE_WIDGET_MOVE_STEP)
         }
         if (listOf("удали блок", "удали виджет", "remove widget", "delete widget").any(text::contains)) {
             return LiveWidgetCommand.Remove(type)
