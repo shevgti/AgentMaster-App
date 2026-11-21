@@ -35,7 +35,7 @@ object LiveWidgetCommandParser {
             else -> null
         }
         if (directions != null && listOf("перемести", "сдвинь", "move", "shift").any(text::contains)) {
-            return LiveWidgetCommand.Move(type, directions.first * MOVE_STEP, directions.second * LIVE_WIDGET_MOVE_STEP)
+            return LiveWidgetCommand.Move(type, directions.first * MOVE_STEP, directions.second * MOVE_STEP)
         }
         if (listOf("удали блок", "удали виджет", "remove widget", "delete widget").any(text::contains)) {
             return LiveWidgetCommand.Remove(type)
