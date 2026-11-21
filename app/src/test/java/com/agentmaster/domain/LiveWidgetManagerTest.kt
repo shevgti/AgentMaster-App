@@ -1,7 +1,7 @@
 package com.agentmaster.domain
 
 import org.junit.Assert.assertEquals
-import org.junit.AssertNotNull
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
