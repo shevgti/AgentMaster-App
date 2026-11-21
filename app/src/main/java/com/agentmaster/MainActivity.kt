@@ -6,6 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
 import com.agentmaster.data.AgentRepository
+import com.agentmaster.data.LiveWidgetRepository
+import com.agentmaster.domain.LiveWidgetCommandParser
+import com.agentmaster.domain.LiveWidgetManager
 import com.agentmaster.domain.Orchestrator
 import com.agentmaster.domain.Task
 import com.agentmaster.ui.ChatScreen
@@ -19,21 +22,35 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val prefs = getSharedPreferences("agent_master", Context.MODE_PRIVATE)
+        val widgetRepository = LiveWidgetRepository(getSharedPreferences("live_widgets", Context.MODE_PRIVATE))
 
         setContent {
             AgentMasterTheme {
                 var screen by remember { mutableStateOf("chat") }
                 var tasks by remember { mutableStateOf(listOf<Task>()) }
                 var isWorking by remember { mutableStateOf(false) }
+                var widgetLayout by remember { mutableStateOf(widgetRepository.load()) }
                 val scope = rememberCoroutineScope()
 
                 if (screen == "chat") {
                     ChatScreen(
                         tasks = tasks,
                         isWorking = isWorking,
+                        widgets = widgetLayout.widgets,
+                        onWidgetChanged = { changed ->
+                            widgetLayout = widgetLayout.copy(widgets = widgetLayout.widgets.map { if (it.id == changed.id) changed else it })
+                            widgetRepository.save(widgetLayout)
+                        },
                         onOpenSettings = { screen = "settings" },
                         onSendTask = { prompt ->
-                            if (isWorking || prompt.isBlank()) return@ChatScreen
+                            if (prompt.isBlank()) return@ChatScreen
+                            val widgetCommand = LiveWidgetCommandParser.parse(prompt)
+                            if (widgetCommand != null) {
+                                widgetLayout = LiveWidgetManager.apply(widgetLayout, widgetCommand)
+                                widgetRepository.save(widgetLayout)
+                                return@ChatScreen
+                            }
+                            if (isWorking) return@ChatScreen
                             scope.launch {
                                 isWorking = true
                                 val newTask = Task(userPrompt = prompt)
