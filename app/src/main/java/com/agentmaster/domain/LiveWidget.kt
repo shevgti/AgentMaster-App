@@ -32,6 +32,7 @@ data class LiveWidgetLayout(
 
 sealed interface LiveWidgetCommand {
     data class Add(val type: LiveWidgetType) : LiveWidgetCommand
+    data class SetCity(val city: String) : LiveWidgetCommand
     data class Show(val type: LiveWidgetType) : LiveWidgetCommand
     data class Hide(val type: LiveWidgetType) : LiveWidgetCommand
     data object HideAll : LiveWidgetCommand
@@ -50,6 +51,11 @@ object LiveWidgetManager {
     fun apply(layout: LiveWidgetLayout, command: LiveWidgetCommand): LiveWidgetLayout {
         val widgets = layout.widgets.toMutableList()
         when (command) {
+            is LiveWidgetCommand.SetCity -> {
+                val index = widgets.indexOfFirst { it.type == LiveWidgetType.WEATHER }
+                if (index >= 0) widgets[index] = widgets[index].copy(city = command.city, visible = true)
+                else widgets += LiveWidget(type = LiveWidgetType.WEATHER, city = command.city, zIndex = nextZ(widgets))
+            }
             is LiveWidgetCommand.Add -> {
                 val sameTypeCount = widgets.count { it.type == command.type }
                 val offset = 0.08f * (sameTypeCount + 1)
