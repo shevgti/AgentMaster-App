@@ -24,6 +24,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.agentmaster.domain.LiveWidget
 import com.agentmaster.domain.LiveWidgetType
+import com.agentmaster.data.LiveWeatherClient
+import com.agentmaster.data.LiveWeatherSnapshot
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -74,6 +76,17 @@ private fun LiveWidgetCard(widget: LiveWidget, modifier: Modifier = Modifier) {
     var time by remember { mutableStateOf(nowTime()) }
     var batteryPercent by remember { mutableIntStateOf(readBattery(context).first) }
     var charging by remember { mutableStateOf(readBattery(context).second) }
+    val weatherClient = remember { LiveWeatherClient() }
+    var weather by remember(widget.id, widget.city) { mutableStateOf<LiveWeatherSnapshot?>(null) }
+    var weatherError by remember(widget.id, widget.city) { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(widget.id, widget.city, widget.type) {
+        if (widget.type == LiveWidgetType.WEATHER && widget.city.isNotBlank()) {
+            runCatching { weatherClient.fetch(widget.city) }
+                .onSuccess { weather = it; weatherError = null }
+                .onFailure { weatherError = it.localizedMessage ?: "Не удалось получить погоду" }
+        }
+    }
 
     LaunchedEffect(widget.id, widget.type) {
         while (widget.type == LiveWidgetType.CLOCK) {
@@ -118,8 +131,19 @@ private fun LiveWidgetCard(widget: LiveWidget, modifier: Modifier = Modifier) {
                     }
                     LiveWidgetType.WEATHER -> {
                         Text("Погода", style = MaterialTheme.typography.titleMedium)
-                        Text(if (widget.city.isBlank()) "Укажите город в настройках" else widget.city)
-                        Text("Источник погоды ещё не подключён", style = MaterialTheme.typography.labelSmall)
+                        when {
+                            widget.city.isBlank() -> Text("Скажите: «Погода в Берлине»")
+                            weather != null -> {
+                                val current = weather!!
+                                Text(current.city, style = MaterialTheme.typography.labelMedium)
+                                Text(current.temperatureC.toInt().toString() + "°C", style = MaterialTheme.typography.headlineSmall)
+                                Text("Ощущается как " + current.feelsLikeC.toInt() + "°C")
+                                Text("Ветер " + current.windKmh.toInt() + " км/ч · осадки " + current.precipitationMm + " мм")
+                                Text(weatherDescription(current.weatherCode), style = MaterialTheme.typography.labelSmall)
+                            }
+                            weatherError != null -> Text("Погода недоступна: " + weatherError, color = MaterialTheme.colorScheme.error)
+                            else -> Text("Загружаем погоду…", style = MaterialTheme.typography.labelSmall)
+                        }
                     }
                     LiveWidgetType.BATTERY -> {
                         Text("$batteryPercent%", style = MaterialTheme.typography.headlineSmall)
@@ -144,4 +168,19 @@ private fun readBattery(context: Context): Pair<Int, Boolean> {
     val isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
         status == BatteryManager.BATTERY_STATUS_FULL
     return percent to isCharging
+}
+
+ 
+private fun weatherDescription(code: Int): String = when (code) {
+    0 -> "Ясно"
+    1, 2 -> "Малооблачно"
+    3 -> "Облачно"
+    45, 48 -> "Туман"
+    51, 53, 55, 56, 57 -> "Морось"
+    61, 63, 65, 66, 67 -> "Дождь"
+    71, 73, 75, 77 -> "Снег"
+    80, 81, 82 -> "Ливень"
+    85, 86 -> "Снегопад"
+    95, 96, 99 -> "Гроза"
+    else -> "Погодные условия"
 }
