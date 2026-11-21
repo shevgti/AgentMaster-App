@@ -52,8 +52,10 @@ object LiveWidgetManager {
         val widgets = layout.widgets.toMutableList()
         when (command) {
             is LiveWidgetCommand.SetCity -> {
-                val index = widgets.indexOfFirst { it.type == LiveWidgetType.WEATHER }
-                if (index >= 0) widgets[index] = widgets[index].copy(city = command.city, visible = true)
+                val index = widgets.indices
+                    .filter { widgets[it].type == LiveWidgetType.WEATHER }
+                    .maxByOrNull { widgets[it].zIndex }
+                if (index != null) widgets[index] = widgets[index].copy(city = command.city, visible = true, zIndex = nextZ(widgets))
                 else widgets += LiveWidget(type = LiveWidgetType.WEATHER, city = command.city, zIndex = nextZ(widgets))
             }
             is LiveWidgetCommand.Add -> {
@@ -69,11 +71,13 @@ object LiveWidgetManager {
                 )
             }
             is LiveWidgetCommand.Show -> {
-                val index = widgets.indexOfFirst { it.type == command.type }
-                if (index >= 0) {
-                    widgets[index] = widgets[index].copy(visible = true, zIndex = nextZ(widgets))
-                } else {
+                val matching = widgets.indices.filter { widgets[it].type == command.type }
+                if (matching.isEmpty()) {
                     widgets += LiveWidget(type = command.type, zIndex = nextZ(widgets))
+                } else {
+                    matching.forEach { i -> widgets[i] = widgets[i].copy(visible = true) }
+                    val topmost = matching.maxByOrNull { widgets[it].zIndex }!!
+                    widgets[topmost] = widgets[topmost].copy(zIndex = nextZ(widgets))
                 }
             }
             is LiveWidgetCommand.Hide -> widgets.indices.forEach { i ->
@@ -82,7 +86,7 @@ object LiveWidgetManager {
             LiveWidgetCommand.HideAll -> widgets.indices.forEach { i ->
                 widgets[i] = widgets[i].copy(visible = false)
             }
-            is LiveWidgetCommand.Move -> widgets.indices.firstOrNull { widgets[it].type == command.type && widgets[it].visible }?.let { i ->
+            is LiveWidgetCommand.Move -> widgets.indices.filter { widgets[it].type == command.type && widgets[it].visible }.maxByOrNull { widgets[it].zIndex }?.let { i ->
                 val w = widgets[i]
                 widgets[i] = w.copy(
                     position = WidgetPosition(
@@ -92,14 +96,14 @@ object LiveWidgetManager {
                     zIndex = nextZ(widgets)
                 )
             }
-            is LiveWidgetCommand.Place -> widgets.indices.firstOrNull { widgets[it].type == command.type }?.let { i ->
+            is LiveWidgetCommand.Place -> widgets.indices.filter { widgets[it].type == command.type }.maxByOrNull { widgets[it].zIndex }?.let { i ->
                 widgets[i] = widgets[i].copy(
                     visible = true,
                     position = WidgetPosition(command.x.coerceIn(0f, 1f), command.y.coerceIn(0f, 1f)),
                     zIndex = nextZ(widgets)
                 )
             }
-            is LiveWidgetCommand.Resize -> widgets.indices.firstOrNull { widgets[it].type == command.type && widgets[it].visible }?.let { i ->
+            is LiveWidgetCommand.Resize -> widgets.indices.filter { widgets[it].type == command.type && widgets[it].visible }.maxByOrNull { widgets[it].zIndex }?.let { i ->
                 widgets[i] = widgets[i].copy(scale = (widgets[i].scale * command.factor).coerceIn(MIN_SCALE, MAX_SCALE))
             }
             is LiveWidgetCommand.Remove -> widgets.removeAll { it.type == command.type }
