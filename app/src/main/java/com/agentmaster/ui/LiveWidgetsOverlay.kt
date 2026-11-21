@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.agentmaster.domain.LiveWidget
@@ -44,12 +45,22 @@ fun LiveWidgetsOverlay(
                 widget = widget,
                 modifier = Modifier
                     .offset(x = x, y = y)
+                    .graphicsLayer {
+                        scaleX = widget.scale
+                        scaleY = widget.scale
+                    }
                     .pointerInput(widget.id, width, height) {
+                        var currentX = widget.position.x
+                        var currentY = widget.position.y
                         detectDragGestures { change, dragAmount ->
                             change.consume()
-                            val nextX = (widget.position.x + dragAmount.x / width.toPx()).coerceIn(0f, 1f)
-                            val nextY = (widget.position.y + dragAmount.y / height.toPx()).coerceIn(0f, 1f)
-                            onWidgetChanged(widget.copy(position = widget.position.copy(x = nextX, y = nextY)))
+                            currentX = (currentX + dragAmount.x / width.toPx()).coerceIn(0f, 1f)
+                            currentY = (currentY + dragAmount.y / height.toPx()).coerceIn(0f, 1f)
+                            val front = (widgets.maxOfOrNull { it.zIndex } ?: 0) + 1
+                            onWidgetChanged(widget.copy(
+                                position = widget.position.copy(x = currentX, y = currentY),
+                                zIndex = front
+                            ))
                         }
                     }
             )
