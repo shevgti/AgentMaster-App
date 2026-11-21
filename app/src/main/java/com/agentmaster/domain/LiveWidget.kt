@@ -31,6 +31,7 @@ data class LiveWidgetLayout(
 }
 
 sealed interface LiveWidgetCommand {
+    data class Add(val type: LiveWidgetType) : LiveWidgetCommand
     data class Show(val type: LiveWidgetType) : LiveWidgetCommand
     data class Hide(val type: LiveWidgetType) : LiveWidgetCommand
     data object HideAll : LiveWidgetCommand
@@ -49,6 +50,7 @@ object LiveWidgetManager {
     fun apply(layout: LiveWidgetLayout, command: LiveWidgetCommand): LiveWidgetLayout {
         val widgets = layout.widgets.toMutableList()
         when (command) {
+            is LiveWidgetCommand.Add -> widgets += LiveWidget(type = command.type, zIndex = nextZ(widgets))
             is LiveWidgetCommand.Show -> {
                 val index = widgets.indexOfFirst { it.type == command.type }
                 if (index >= 0) {
