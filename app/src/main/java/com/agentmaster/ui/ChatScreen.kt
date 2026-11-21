@@ -41,7 +41,7 @@ fun ChatScreen(tasks: List<Task>, isWorking: Boolean, widgets: List<LiveWidget>,
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("🤖 Агент-Мастер", fontWeight = FontWeight.Bold) },
+                title = { Text("🤖 Мегаагент", fontWeight = FontWeight.Bold) },
                 actions = {
                     IconButton(onClick = onOpenSettings) {
                         Icon(Icons.Default.Settings, contentDescription = "Настройки")
